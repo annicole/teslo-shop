@@ -3,9 +3,11 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "@mui/material";
 import { lightTheme } from "../themes/light-theme";
 import { SWRConfig } from "swr";
+import { UIProvider } from "../context";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
+    <UIProvider>
     <SWRConfig
       value={{
         fetcher: (resource, init) =>
@@ -16,6 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </ThemeProvider>
     </SWRConfig>
+    </UIProvider>
   );
 }
 
