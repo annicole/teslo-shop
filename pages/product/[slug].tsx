@@ -1,10 +1,14 @@
 import { Box, Button, Chip, Grid, Typography } from "@mui/material";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
+import { GetStaticPaths } from 'next'
+import { GetStaticProps } from 'next'
 import React from "react";
 import { ShopLayout } from "../../components/layouts";
 import {ProductSlideshow, SizeSelector} from "../../components/products";
 import { ItemCounter } from "../../components/ui";
+import { dbProducts } from "../../database";
 import { IProduct } from "../../interfaces";
+
 
 interface Props {
   product : IProduct
@@ -48,5 +52,73 @@ const ProductPage:NextPage<Props> = ({product}) => {
     </ShopLayout>
   );
 };
+
+// export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+//   const { slug } = params as { slug: string }; // your fetch function here
+
+//   const product = await dbProdcuts.getProductBySlug(slug);
+
+//   if (!product) {
+//     return {
+//       redirect: {
+//         destination: "/",
+//         permanent: "false",
+//       },
+//       props: {},
+//     };
+//   }
+
+//   return {
+//     props: {
+//       product,
+//     },
+//   };
+// };
+
+// You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
+
+
+export const getStaticPaths: GetStaticPaths = async (ctx) => {
+  
+  const productSlugs = await dbProducts.getAllProductSlugs();
+
+  
+  return {
+    paths: productSlugs.map( ({ slug }) => ({
+      params: {
+        slug
+      }
+    })),
+    fallback: 'blocking'
+  }
+}
+
+// You should use getStaticProps when:
+//- The data required to render the page is available at build time ahead of a user’s request.
+//- The data comes from a headless CMS.
+//- The data can be publicly cached (not user-specific).
+//- The page must be pre-rendered (for SEO) and be very fast — getStaticProps generates HTML and JSON files, both of which can be cached by a CDN for performance.
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  
+  const { slug = '' } = params as { slug: string };
+  const product = await dbProducts.getProductBySlug( slug );
+
+  if ( !product ) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+      product
+    },
+    revalidate: 60 * 60 * 24
+  }
+}
+
 
 export default ProductPage;
