@@ -9,8 +9,6 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-
-import { initialData } from "../../database/products";
 import { ItemCounter } from "../ui";
 import { CartContext } from "../../context";
 import { ICartProduct } from "../../interfaces";
@@ -20,14 +18,14 @@ interface Props {
 }
 
 export const CartList: FC<Props> = ({ editable = false }) => {
-  const { cart } = useContext(CartContext);
+  const { cart, updateCartQty, removeCartProduct } = useContext(CartContext);
 
   const onNewCartQuantityValue = (
     product: ICartProduct,
     newQuantityValue: number
   ) => {
     product.quantity = newQuantityValue;
-    //updateCartQuantity( product );
+    updateCartQty(product);
   };
 
   return (
@@ -64,7 +62,7 @@ export const CartList: FC<Props> = ({ editable = false }) => {
                 <ItemCounter
                   currentValue={product.quantity}
                   maxValue={10}
-                  updateQuantity={() => {}}
+                  updateQuantity={(qty) => onNewCartQuantityValue(product,qty)}
                 />
               ) : (
                 <Typography variant="h5">
