@@ -9,7 +9,7 @@ import { ItemCounter } from "../../components/ui";
 import { dbProducts } from "../../database";
 import { IProduct, ISize } from "../../interfaces";
 import { ICartProduct } from "../../interfaces/cart";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { CartContext } from "../../context";
 
 interface Props {
@@ -17,9 +17,8 @@ interface Props {
 }
 
 const ProductPage: NextPage<Props> = ({ product }) => {
-
   const router = useRouter();
-  const {addProductToCart} = useContext(CartContext)
+  const { addProductToCart } = useContext(CartContext);
 
   const [tempCart, setTempCart] = useState<ICartProduct>({
     _id: product._id,
@@ -39,18 +38,17 @@ const ProductPage: NextPage<Props> = ({ product }) => {
     }));
   };
 
-  const updateQuantity = (quantity:number) =>{
+  const updateQuantity = (quantity: number) => {
     setTempCart((current) => ({
       ...current,
       quantity,
     }));
-  }
+  };
 
-
-  const onAddProduct = () =>{
+  const onAddProduct = () => {
     addProductToCart(tempCart);
-    router.push('/cart')
-  }
+    router.push("/cart");
+  };
 
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
@@ -72,10 +70,10 @@ const ProductPage: NextPage<Props> = ({ product }) => {
               <Typography variant="subtitle2" component="h1">
                 Cantidad
               </Typography>
-              <ItemCounter 
-               currentValue={tempCart.quantity}
-               updateQuantity={(qty)=>updateQuantity(qty)}
-               maxValue={product.inStock}
+              <ItemCounter
+                currentValue={tempCart.quantity}
+                updateQuantity={(qty) => updateQuantity(qty)}
+                maxValue={product.inStock}
               />
               <SizeSelector
                 selectedSize={tempCart.size}
@@ -85,7 +83,11 @@ const ProductPage: NextPage<Props> = ({ product }) => {
             </Box>
 
             {product.inStock > 0 ? (
-              <Button color="secondary" className="circular-btn">
+              <Button
+                color="secondary"
+                className="circular-btn"
+                onClick={onAddProduct}
+              >
                 {tempCart.size ? " Agregar al carrito" : "Seleciona una talla"}
               </Button>
             ) : (

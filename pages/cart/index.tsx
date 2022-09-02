@@ -13,8 +13,6 @@ import { CartList, OrderSummary } from "../../components/cart";
 import { CartContext } from "../../context";
 
 const CartPage = () => {
-
-  const {cart} = useContext(CartContext)
   return (
     <ShopLayout title="Carrito -" pageDescription="Carrito de compras">
       <Typography variant="h1" component="h1">
