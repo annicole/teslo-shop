@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import NextLink from "next/link";
 import {
   Box,
@@ -14,6 +14,8 @@ import { useForm } from "react-hook-form";
 import { validations } from "../../utils";
 import { tesloApi } from "../../api";
 import { ErrorOutline } from "@mui/icons-material";
+import { AuthContext } from "../../context";
+import { useRouter } from "next/router";
 
 type FormData = {
   email: string;
@@ -29,17 +31,19 @@ const LoginPage = () => {
   } = useForm<FormData>();
 
   const [showError, setShowError] = useState(false);
+  const { loginUser } = useContext(AuthContext);
+  const router = useRouter();
 
   const onLoginUser = async ({ email, password }: FormData) => {
     setShowError(false);
-    try {
-      const { data } = await tesloApi.post("/user/login", { email, password });
-      const { token, user } = data;
-    } catch (error) {
-      console.log(error);
+    const isValidLogin = await loginUser(email, password);
+    if (!isValidLogin) {
       setShowError(true);
-      setTimeout(()=> setShowError(false),3000)
+      setTimeout(() => setShowError(false), 3000);
+      return;
     }
+
+    router.replace("/");
   };
 
   return (
@@ -56,7 +60,7 @@ const LoginPage = () => {
                 color="error"
                 icon={<ErrorOutline />}
                 className="fadeIn"
-                sx={{display: showError ? 'flex': 'none'}}
+                sx={{ display: showError ? "flex" : "none" }}
               />
             </Grid>
 

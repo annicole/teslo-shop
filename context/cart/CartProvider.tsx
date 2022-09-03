@@ -22,7 +22,7 @@ const CART_INITIAL_STATE: CartState = {
 }
 
 
-export const CartProvider:FC = ({ children }:any) => {
+export const CartProvider = ({ children }:any) => {
 
     const [state, dispatch] = useReducer( cartReducer , CART_INITIAL_STATE );
 

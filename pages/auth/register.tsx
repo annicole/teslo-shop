@@ -13,7 +13,9 @@ import { useForm } from "react-hook-form";
 import { ErrorOutline } from "@mui/icons-material";
 import { validations } from "../../utils";
 import { tesloApi } from "../../api";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context";
+import { useRouter } from "next/router";
 
 type FormData = {
   email: string;
@@ -30,21 +32,22 @@ const RegisterPage = () => {
   } = useForm<FormData>();
 
   const [showError, setShowError] = useState(false);
+  const [erroeMessage, setErrorMessage] = useState('false');
+  const { registerUser } = useContext(AuthContext);
+  const router = useRouter();
+
 
   const onRegisterForm = async ({ email, password, name }: FormData) => {
     setShowError(false);
-    try {
-      const { data } = await tesloApi.post("/user/register", {
-        email,
-        password,
-        name,
-      });
-      const { token, user } = data;
-    } catch (error) {
-      console.log(error);
+    const {hasError,message} = await registerUser(name,email, password);
+    if (hasError) {
       setShowError(true);
+      setErrorMessage(message!)
       setTimeout(() => setShowError(false), 3000);
+      return;
     }
+
+    router.replace("/");
   };
 
   return (
@@ -61,7 +64,7 @@ const RegisterPage = () => {
                 color="error"
                 icon={<ErrorOutline />}
                 className="fadeIn"
-                sx={{ display: false ? "flex" : "none" }}
+                sx={{ display: showError ? "flex" : "none" }}
               />
             </Grid>
 
