@@ -1,4 +1,4 @@
-import { FC, useReducer } from "react";
+import { FC, useReducer, useEffect } from 'react';
 import { IUser } from "../../interfaces";
 import { AuthContext, AuthReducer } from "./";
 import tesloApi from '../../api/tesloApi';
@@ -18,6 +18,13 @@ const Auth_INITIAL_STATE: AuthState = {
 export const AuthProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(AuthReducer, Auth_INITIAL_STATE);
   
+  useEffect(()=>{
+
+  },[])
+
+  const checkToken = async ()=>{
+    
+  }
 
   const loginUser = async (email:string,password:string):Promise<boolean>=>{
     try {
