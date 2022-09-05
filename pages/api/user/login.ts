@@ -19,6 +19,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  console.log(req.method);
   switch (req.method) {
     case "POST":
       return loginUser(req, res);
@@ -32,22 +33,33 @@ export default function handler(
 
 const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { email = "", password = "" } = req.body;
+
   await db.connect();
   const user = await User.findOne({ email });
   await db.disconnect();
-  if (!user)
-    return res.status(400).json({ message: "Correo o contraseña no válido" });
 
-  if (!bcrypt.compareSync(user.password!, password)) return res.status(400).json({ message: "Correo o contraseña no válido" });
-  
-  
+  if (!user) {
+    return res
+      .status(400)
+      .json({ message: "Correo o contraseña no válidos - EMAIL" });
+  }
+
+  if (!bcrypt.compareSync(password, user.password!)) {
+    return res
+      .status(400)
+      .json({ message: "Correo o contraseña no válidos - Password" });
+  }
+
   const { role, name, _id } = user;
-  const token = jwt.signToken( _id, email );
+
+  const token = jwt.signToken(_id, email);
 
   return res.status(200).json({
-      token, //jwt
-      user: {
-          email, role, name
-      }
-  })
+    token, //jwt
+    user: {
+      email,
+      role,
+      name,
+    },
+  });
 };
